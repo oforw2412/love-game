@@ -299,7 +299,6 @@
     <div id="game-box">
       <div class="progress-info">
         <span id="progress-text">已完成 0 場</span>
-        <span id="estimated-text">計算預計場次中...</span>
       </div>
 
       <div class="progress-bar-container">
@@ -385,8 +384,6 @@
     let rightIndex = 0;
     
     let totalMatchesDone = 0;
-    let matchMin = 0;
-    let matchMax = 0;
     let pickStats = {}; 
     let isProcessingClick = false; // 防止連續快速重複點擊
 
@@ -399,37 +396,8 @@
       return result;
     }
 
-    function calculateMatchRange(n) {
-      if (n <= 1) return { min: 0, max: 0 };
-
-      let current = Array(n).fill(1);
-      let min = 0;
-      let max = 0;
-
-      while (current.length > 1) {
-        const next = [];
-        for (let i = 0; i < current.length; i += 2) {
-          if (i + 1 < current.length) {
-            const left = current[i];
-            const right = current[i + 1];
-            min += Math.min(left, right);
-            max += left + right - 1;
-            next.push(left + right);
-          } else {
-            next.push(current[i]);
-          }
-        }
-        current = next;
-      }
-
-      return { min, max };
-    }
-
     function initGame() {
       const totalChars = initialList.length;
-      const range = calculateMatchRange(totalChars);
-      matchMin = range.min;
-      matchMax = range.max;
 
       pickStats = {};
       initialList.forEach(name => {
@@ -440,8 +408,6 @@
         `一對一對決，依照你的每次選擇排出專屬的 1～${totalChars} 名男主榜單`;
       document.getElementById('dynamic-result-sub').textContent = 
         `${totalChars} 位男主，沒有平手的專屬榜單`;
-      document.getElementById('estimated-text').textContent = 
-        `本次預計 ${matchMin}～${matchMax} 場`;
 
       totalMatchesDone = 0;
       isProcessingClick = false;
@@ -512,7 +478,7 @@
       document.getElementById('match-tag').textContent = `第 ${totalMatchesDone + 1} 場對決`;
       document.getElementById('progress-text').textContent = `已完成 ${totalMatchesDone} 場`;
       
-      const progress = Math.min(99, Math.floor((totalMatchesDone / matchMax) * 100));
+      const progress = Math.min(95, totalMatchesDone * 3);
       document.getElementById('progress').style.width = `${progress}%`;
 
       isProcessingClick = false; // 允許進行下一次點擊
@@ -602,7 +568,6 @@
     function analyzeUserPreference(ranking) {
       renderAnalysis('analysis-actual-matches', '🎉 對決統計：', `你實際完成了 ${totalMatchesDone} 場對決`);
 
-      const top10 = ranking.slice(0, 10);
       const top3 = ranking.slice(0, 3);
       
       const gameCountsTop10 = {};
