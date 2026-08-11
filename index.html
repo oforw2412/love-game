@@ -281,9 +281,6 @@
 
     <!-- 遊戲區 -->
     <div id="game-box">
-      <div class="progress-info">
-        <span id="progress-text">已完成 0 場</span>
-      </div>
 
       <div id="match-tag" class="match-tag">第 1 場對決</div>
 
@@ -456,7 +453,6 @@
       document.getElementById('game-1').textContent = charData[p2] || "";
 
       document.getElementById('match-tag').textContent = `第 ${totalMatchesDone + 1} 場對決`;
-      document.getElementById('progress-text').textContent = `已完成 ${totalMatchesDone} 場`;
 
       isProcessingClick = false; // 允許進行下一次點擊
     }
