@@ -556,17 +556,29 @@
       });
 
       // 1. 本命作品
-      let topGame = "";
       let maxTop10Count = 0;
-      for (const [game, count] of Object.entries(gameCountsTop10)) {
+      for (const count of Object.values(gameCountsTop10)) {
         if (count > maxTop10Count) {
           maxTop10Count = count;
-          topGame = game;
         }
       }
-      renderAnalysis('analysis-1', '🎮 本命作品：', 
-        maxTop10Count > 0 ? `《${topGame}》（TOP 10 佔據 ${maxTop10Count} 位）` : '各作品表現平均');
-
+      
+      const topGames = Object.entries(gameCountsTop10)
+        .filter(([game, count]) => count === maxTop10Count)
+        .map(([game]) => game);
+      
+      let topGameText;
+      
+      if (topGames.length === 0) {
+        topGameText = '各作品表現平均';
+      } else if (topGames.length === 1) {
+        topGameText = `《${topGames[0]}》（TOP 10 佔據 ${maxTop10Count} 位）`;
+      } else {
+        topGameText = `${topGames.map(game => `《${game}》`).join('、')}（TOP 10 各佔 ${maxTop10Count} 位）`;
+      }
+      
+      renderAnalysis('analysis-1', '🎮 本命作品：', topGameText);
+      
       // 2. TOP 3 組成
       const top3Summary = Object.entries(gameCountsTop3)
         .map(([game, count]) => `《${game}》×${count}`)
