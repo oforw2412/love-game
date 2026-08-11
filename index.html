@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>💗 乙遊男主二選一</title>
+  <style>
+    :root {
+      --bg-color: #fdf2f8;
+      --card-bg: #ffffff;
+      --primary: #f43f5e;
+      --primary-hover: #e11d48;
+      --accent: #fda4af;
+      --text: #4c0519;
+      --sub-text: #9f1239;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .container {
+      background: var(--card-bg);
+      border-radius: 24px;
+      padding: 28px;
+      max-width: 520px;
+      width: 100%;
+      box-shadow: 0 10px 25px -5px rgba(244, 63, 94, 0.15);
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      margin: 0 0 6px 0;
+      color: var(--primary);
+    }
+
+    .subtitle {
+      font-size: 0.85rem;
+      color: var(--sub-text);
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--sub-text);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      background-color: #ffe4e6;
+      border-radius: 999px;
+      height: 10px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background-color: var(--primary);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .match-tag {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      background: #ffe4e6;
+      color: var(--primary);
+    }
+
+    .question {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    .vs-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    /* 按鈕預設樣式 */
+    .option-btn {
+      background: #fff1f2;
+      border: 2px solid var(--accent);
+      border-radius: 16px;
+      padding: 18px;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
+    }
+
+    /* 電腦版滑鼠 Hover 效果 */
+    @media (hover: hover) {
+      .option-btn:hover {
+        background: #fecdd3;
+        border-color: var(--primary);
+        transform: translateY(-2px);
+      }
+    }
+
+    /* 💡 選中的高亮狀態（由 JS 動態短暫賦予） */
+    .option-btn.selected {
+      background: var(--primary) !important;
+      color: white !important;
+      border-color: var(--primary) !important;
+      transform: scale(0.97);
+    }
+
+    .option-btn .game-title {
+      font-size: 0.85rem;
+      font-weight: normal;
+      opacity: 0.8;
+      margin-top: 4px;
+    }
+
+    .vs-badge {
+      font-weight: 900;
+      color: var(--primary);
+      font-style: italic;
+    }
+
+    .hint {
+      font-size: 0.75rem;
+      color: var(--sub-text);
+      opacity: 0.7;
+      margin-top: 8px;
+    }
+
+    /* 結果區 */
+    .result-box {
+      display: none;
+      max-height: 75vh;
+      overflow-y: auto;
+      text-align: left;
+    }
+
+    .result-header {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .result-header h2 {
+      color: var(--primary);
+      margin: 0 0 4px 0;
+    }
+
+    .result-header p {
+      font-size: 0.85rem;
+      color: var(--sub-text);
+      margin: 0;
+    }
+
+    .champion-card {
+      background: linear-gradient(135deg, #fef08a 0%, #fde047 100%);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      color: #854d0e;
+      box-shadow: 0 4px 12px rgba(250, 204, 21, 0.3);
+      margin-bottom: 16px;
+    }
+
+    .champion-crown {
+      font-size: 2.5rem;
+      margin-bottom: 4px;
+    }
+
+    .champion-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      opacity: 0.9;
+    }
+
+    .champion-name {
+      font-size: 1.8rem;
+      font-weight: 900;
+      margin: 4px 0;
+    }
+
+    .champion-game {
+      font-size: 0.85rem;
+      opacity: 0.85;
+    }
+
+    /* 偏好分析報告 */
+    .analysis-box {
+      background: #fff1f2;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 20px;
+      border: 1px solid var(--accent);
+    }
+
+    .analysis-box h3 {
+      margin: 0 0 12px 0;
+      font-size: 1rem;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .analysis-item {
+      font-size: 0.85rem;
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+
+    .analysis-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .ranking-list {
+      list-style: none;
+      padding: 0;
+      margin: 16px 0;
+    }
+
+    .ranking-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      margin-bottom: 6px;
+      border-radius: 10px;
+      background: #fff1f2;
+      font-weight: 600;
+    }
+
+    .ranking-item.top2 { background: #e2e8f0; color: #334155; }
+    .ranking-item.top3 { background: #ffedd5; color: #9a3412; }
+
+    .rank-num { font-weight: 800; width: 75px; }
+    .char-info { flex-grow: 1; text-align: left; }
+    .char-game { font-size: 0.75rem; opacity: 0.75; font-weight: normal; }
+
+    .restart-btn {
+      width: 100%;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.2s;
+    }
+
+    .restart-btn:hover {
+      background: var(--primary-hover);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>💗 乙遊男主二選一</h1>
+    <div class="subtitle" id="dynamic-subtitle">
+      一對一對決，依照你的每次選擇<br>
+      排出專屬的榜單
+    </div>
+
+    <!-- 遊戲區 -->
+    <div id="game-box">
+      <div class="progress-info">
+        <span id="progress-text">已完成 0 場</span>
+        <span id="estimated-text">計算預計場次中...</span>
+      </div>
+
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progress"></div>
+      </div>
+
+      <div id="match-tag" class="match-tag">第 1 場對決</div>
+
+      <div class="question">如果只能留一個，你選誰？</div>
+
+      <div class="vs-container">
+        <button class="option-btn" id="option-0" onclick="selectWinner(0)">
+          <span id="name-0">男主 A</span>
+          <span class="game-title" id="game-0">遊戲</span>
+        </button>
+
+        <div class="vs-badge">VS</div>
+
+        <button class="option-btn" id="option-1" onclick="selectWinner(1)">
+          <span id="name-1">男主 B</span>
+          <span class="game-title" id="game-1">遊戲</span>
+        </button>
+      </div>
+
+      <div class="hint">※ 選擇後會直接進入下一場，請憑直覺！</div>
+    </div>
+
+    <!-- 結果區 -->
+    <div class="result-box" id="result-box">
+      <div class="result-header">
+        <h2>🏆 你的乙遊男主本命榜</h2>
+        <p id="dynamic-result-sub">沒有平手的專屬榜單</p>
+      </div>
+
+      <!-- 冠軍卡片 -->
+      <div class="champion-card">
+        <div class="champion-crown">👑</div>
+        <div class="champion-label">你的第一名・本命</div>
+        <div class="champion-name" id="champion-name">—</div>
+        <div class="champion-game" id="champion-game">—</div>
+      </div>
+
+      <!-- 偏好分析報告 -->
+      <div class="analysis-box">
+        <h3>📊 乙遊偏好分析報告</h3>
+        <div class="analysis-item" id="analysis-actual-matches">🎉 <strong>對決統計：</strong>計算中...</div>
+        <div class="analysis-item" id="analysis-1">🎮 <strong>本命作品：</strong>計算中...</div>
+        <div class="analysis-item" id="analysis-2">💗 <strong>TOP 3 組成：</strong>計算中...</div>
+        <div class="analysis-item" id="analysis-stable">💘 <strong>最穩定偏愛：</strong>計算中...</div>
+        <div class="analysis-item" id="analysis-most-wins">⚔️ <strong>最強實戰王：</strong>計算中...</div>
+        <div class="analysis-item" id="analysis-winrate">🔥 <strong>戰無不勝勝率王：</strong>計算中...</div>
+        <div class="analysis-item" id="analysis-avg-rank">📈 <strong>各作品男主平均排名：</strong>計算中...</div>
+      </div>
+
+      <div class="ranking-list" id="ranking-list"></div>
+
+      <button class="restart-btn" onclick="initGame()">💗 再玩一次</button>
+    </div>
+  </div>
+
+  <script>
+    // ==========================================
+    // 💡 角色資料設定區 (Single Source of Truth)
+    // ==========================================
+    const charData = {
+      "黎深": "戀與深空", "葉瑄": "時空中的繪旅人", "夏鳴星": "光與夜之戀", "莫弈": "未定事件簿",
+      "白起": "戀與製作人", "顧時夜": "世界之外", "左然": "未定事件簿", "司嵐": "時空中的繪旅人",
+      "李澤言": "戀與製作人", "路辰": "時空中的繪旅人", "凌肖": "戀與製作人", "查理蘇": "光與夜之戀",
+      "秦徹": "戀與深空", "周棋洛": "戀與製作人", "齊司禮": "光與夜之戀", "易遇": "世界之外",
+      "沈星回": "戀與深空", "蕭逸": "光與夜之戀", "羅夏": "時空中的繪旅人", "夏以晝": "戀與深空",
+      "陸沉": "光與夜之戀", "祁煜": "戀與深空", "艾因": "時空中的繪旅人", "夏彥": "未定事件簿",
+      "許墨": "戀與製作人", "夏蕭因": "世界之外", "陸景和": "未定事件簿", "柏源": "世界之外"
+    };
+
+    const initialList = Object.keys(charData);
+
+    let currentLevelQueue = [];
+    let nextLevelQueue = [];
+    let currentLeft = [];
+    let currentRight = [];
+    let mergedResult = [];
+    let leftIndex = 0;
+    let rightIndex = 0;
+    
+    let totalMatchesDone = 0;
+    let matchMin = 0;
+    let matchMax = 0;
+    let pickStats = {}; 
+    let isProcessingClick = false; // 防止連續快速重複點擊
+
+    function shuffle(array) {
+      const result = [...array];
+      for (let i = result.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [result[i], result[j]] = [result[j], result[i]];
+      }
+      return result;
+    }
+
+    function calculateMatchRange(n) {
+      if (n <= 1) return { min: 0, max: 0 };
+
+      let current = Array(n).fill(1);
+      let min = 0;
+      let max = 0;
+
+      while (current.length > 1) {
+        const next = [];
+        for (let i = 0; i < current.length; i += 2) {
+          if (i + 1 < current.length) {
+            const left = current[i];
+            const right = current[i + 1];
+            min += Math.min(left, right);
+            max += left + right - 1;
+            next.push(left + right);
+          } else {
+            next.push(current[i]);
+          }
+        }
+        current = next;
+      }
+
+      return { min, max };
+    }
+
+    function initGame() {
+      const totalChars = initialList.length;
+      const range = calculateMatchRange(totalChars);
+      matchMin = range.min;
+      matchMax = range.max;
+
+      pickStats = {};
+      initialList.forEach(name => {
+        pickStats[name] = { battles: 0, wins: 0 };
+      });
+
+      document.getElementById('dynamic-subtitle').textContent = 
+        `一對一對決，依照你的每次選擇排出專屬的 1～${totalChars} 名男主榜單`;
+      document.getElementById('dynamic-result-sub').textContent = 
+        `${totalChars} 位男主，沒有平手的專屬榜單`;
+      document.getElementById('estimated-text').textContent = 
+        `本次預計 ${matchMin}～${matchMax} 場`;
+
+      totalMatchesDone = 0;
+      isProcessingClick = false;
+      const shuffled = shuffle(initialList);
+      currentLevelQueue = shuffled.map(name => [name]);
+      nextLevelQueue = [];
+
+      document.getElementById('game-box').style.display = 'block';
+      document.getElementById('result-box').style.display = 'none';
+
+      startNextMergeTask();
+    }
+
+    function startNextMergeTask() {
+      if (currentLevelQueue.length === 0) {
+        if (nextLevelQueue.length === 1) {
+          finishGame(nextLevelQueue[0]);
+          return;
+        }
+        currentLevelQueue = nextLevelQueue;
+        nextLevelQueue = [];
+      }
+
+      if (currentLevelQueue.length === 1) {
+        nextLevelQueue.push(currentLevelQueue.shift());
+        startNextMergeTask();
+        return;
+      }
+
+      currentLeft = currentLevelQueue.shift();
+      currentRight = currentLevelQueue.shift();
+      leftIndex = 0;
+      rightIndex = 0;
+      mergedResult = [];
+
+      stepMerge();
+    }
+
+    function stepMerge() {
+      if (leftIndex < currentLeft.length && rightIndex < currentRight.length) {
+        renderMatch(currentLeft[leftIndex], currentRight[rightIndex]);
+      } else {
+        if (leftIndex < currentLeft.length) {
+          mergedResult.push(...currentLeft.slice(leftIndex));
+        } else if (rightIndex < currentRight.length) {
+          mergedResult.push(...currentRight.slice(rightIndex));
+        }
+
+        nextLevelQueue.push(mergedResult);
+        startNextMergeTask();
+      }
+    }
+
+    function renderMatch(p1, p2) {
+      // 💡 切換新題目時，重置所有按鈕樣式與狀態
+      const btn0 = document.getElementById('option-0');
+      const btn1 = document.getElementById('option-1');
+      btn0.classList.remove('selected');
+      btn1.classList.remove('selected');
+      btn0.blur();
+      btn1.blur();
+
+      document.getElementById('name-0').textContent = p1;
+      document.getElementById('game-0').textContent = charData[p1] || "";
+      document.getElementById('name-1').textContent = p2;
+      document.getElementById('game-1').textContent = charData[p2] || "";
+
+      document.getElementById('match-tag').textContent = `第 ${totalMatchesDone + 1} 場對決`;
+      document.getElementById('progress-text').textContent = `已完成 ${totalMatchesDone} 場`;
+      
+      const progress = Math.min(99, Math.floor((totalMatchesDone / matchMax) * 100));
+      document.getElementById('progress').style.width = `${progress}%`;
+
+      isProcessingClick = false; // 允許進行下一次點擊
+    }
+
+    function selectWinner(selectedIndex) {
+      if (isProcessingClick) return; // 避免連點爆發
+      isProcessingClick = true;
+
+      // 💡 1. 立即讓被選中的按鈕變亮紅（白字），給予清晰視覺反饋
+      const selectedBtn = document.getElementById(`option-${selectedIndex}`);
+      selectedBtn.classList.add('selected');
+
+      const p1 = currentLeft[leftIndex];
+      const p2 = currentRight[rightIndex];
+
+      pickStats[p1].battles++;
+      pickStats[p2].battles++;
+
+      if (selectedIndex === 0) {
+        mergedResult.push(p1);
+        pickStats[p1].wins++;
+        leftIndex++;
+      } else {
+        mergedResult.push(p2);
+        pickStats[p2].wins++;
+        rightIndex++;
+      }
+
+      totalMatchesDone++;
+
+      // 💡 2. 停頓 180 毫秒（視覺確認感最佳），再進入下一題
+      setTimeout(() => {
+        stepMerge();
+      }, 180);
+    }
+
+    function finishGame(finalRanking) {
+      document.getElementById('progress').style.width = `100%`;
+      document.getElementById('game-box').style.display = 'none';
+      document.getElementById('result-box').style.display = 'block';
+
+      const champion = finalRanking[0];
+      document.getElementById('champion-name').textContent = champion;
+      document.getElementById('champion-game').textContent = `《${charData[champion] || ''}》`;
+
+      analyzeUserPreference(finalRanking);
+
+      const listContainer = document.getElementById('ranking-list');
+      listContainer.replaceChildren();
+
+      finalRanking.slice(1).forEach((name, index) => {
+        const rank = index + 2;
+        
+        const itemDiv = document.createElement('div');
+        let rankClass = 'ranking-item';
+        let medal = '';
+
+        if (rank === 2) { rankClass += ' top2'; medal = '🥈 '; }
+        else if (rank === 3) { rankClass += ' top3'; medal = '🥉 '; }
+        itemDiv.className = rankClass;
+
+        const rankSpan = document.createElement('span');
+        rankSpan.className = 'rank-num';
+        rankSpan.textContent = `第 ${rank} 名`;
+
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'char-info';
+
+        const nameDiv = document.createElement('div');
+        nameDiv.textContent = `${medal}${name}`;
+
+        const gameDiv = document.createElement('div');
+        gameDiv.className = 'char-game';
+        gameDiv.textContent = charData[name] || '';
+
+        infoDiv.appendChild(nameDiv);
+        infoDiv.appendChild(gameDiv);
+        itemDiv.appendChild(rankSpan);
+        itemDiv.appendChild(infoDiv);
+
+        listContainer.appendChild(itemDiv);
+      });
+    }
+
+    // 📊 偏好人格分析報告
+    function analyzeUserPreference(ranking) {
+      renderAnalysis('analysis-actual-matches', '🎉 對決統計：', `你實際完成了 ${totalMatchesDone} 場對決`);
+
+      const top10 = ranking.slice(0, 10);
+      const top3 = ranking.slice(0, 3);
+      
+      const gameCountsTop10 = {};
+      const gameCountsTop3 = {};
+      const gameRankSum = {};
+      const gameTotalChars = {};
+
+      ranking.forEach((name, idx) => {
+        const game = charData[name];
+        if (!game) return;
+
+        if (idx < 10) gameCountsTop10[game] = (gameCountsTop10[game] || 0) + 1;
+        if (idx < 3) gameCountsTop3[game] = (gameCountsTop3[game] || 0) + 1;
+        
+        gameRankSum[game] = (gameRankSum[game] || 0) + (idx + 1);
+        gameTotalChars[game] = (gameTotalChars[game] || 0) + 1;
+      });
+
+      // 1. 本命作品
+      let topGame = "";
+      let maxTop10Count = 0;
+      for (const [game, count] of Object.entries(gameCountsTop10)) {
+        if (count > maxTop10Count) {
+          maxTop10Count = count;
+          topGame = game;
+        }
+      }
+      renderAnalysis('analysis-1', '🎮 本命作品：', 
+        maxTop10Count > 0 ? `《${topGame}》（TOP 10 佔據 ${maxTop10Count} 位）` : '各作品表現平均');
+
+      // 2. TOP 3 組成
+      const top3Summary = Object.entries(gameCountsTop3)
+        .map(([game, count]) => `《${game}》×${count}`)
+        .join(' ＋ ');
+      renderAnalysis('analysis-2', '💗 TOP 3 組成：', top3Summary || '無');
+
+      // 3. 💘 最穩定偏愛
+      let stableChar = ranking[0];
+      let maxScore = -1;
+      ranking.slice(0, 5).forEach((name, rankIdx) => {
+        const stat = pickStats[name];
+        if (stat && stat.battles > 0) {
+          const score = (stat.wins / stat.battles) * 10 + stat.battles - rankIdx;
+          if (score > maxScore) {
+            maxScore = score;
+            stableChar = name;
+          }
+        }
+      });
+      const stableStat = pickStats[stableChar];
+      const stableWinRate = (stableStat && stableStat.battles > 0)
+        ? ((stableStat.wins / stableStat.battles) * 100).toFixed(0)
+        : "100";
+      renderAnalysis('analysis-stable', '💘 最穩定偏愛：', 
+        `${stableChar}（參戰 ${stableStat ? stableStat.battles : 0} 次，勝率 ${stableWinRate}%，排名 #${ranking.indexOf(stableChar) + 1}）`);
+
+      // 4. ⚔️ 最強實戰王
+      let mostWinsChar = ranking[0];
+      let maxWins = -1;
+      for (const [name, stat] of Object.entries(pickStats)) {
+        if (stat.wins > maxWins) {
+          maxWins = stat.wins;
+          mostWinsChar = name;
+        }
+      }
+      renderAnalysis('analysis-most-wins', '⚔️ 最強實戰王：', `${mostWinsChar}（斬獲 ${maxWins} 勝）`);
+
+      // 5. 🔥 戰無不勝勝率王
+      let winRateKing = null;
+      let maxWinRate = -1;
+      for (const [name, stat] of Object.entries(pickStats)) {
+        if (stat.battles >= 5) {
+          const rate = stat.wins / stat.battles;
+          if (rate > maxWinRate) {
+            maxWinRate = rate;
+            winRateKing = name;
+          }
+        }
+      }
+      const winRateText = winRateKing 
+        ? `${winRateKing}（勝率 ${(maxWinRate * 100).toFixed(0)}%，${pickStats[winRateKing].wins}/${pickStats[winRateKing].battles} 勝）`
+        : `${ranking[0]}（本命霸主）`;
+      renderAnalysis('analysis-winrate', '🔥 戰無不勝勝率王：', winRateText);
+
+      // 6. 📈 各作品男主平均排名
+      let bestAvgGame = "";
+      let minAvgRank = 999;
+      for (const game of Object.keys(gameTotalChars)) {
+        const avg = gameRankSum[game] / gameTotalChars[game];
+        if (avg < minAvgRank) {
+          minAvgRank = avg;
+          bestAvgGame = game;
+        }
+      }
+      renderAnalysis('analysis-avg-rank', '📈 各作品男主平均排名：', `《${bestAvgGame}》（平均第 ${minAvgRank.toFixed(1)} 名）`);
+    }
+
+    function renderAnalysis(containerId, label, text) {
+      const el = document.getElementById(containerId);
+      el.replaceChildren();
+      el.append(label);
+      const strong = document.createElement('strong');
+      strong.textContent = text;
+      el.appendChild(strong);
+    }
+
+    initGame();
+  </script>
+</body>
+</html>
