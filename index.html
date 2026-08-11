@@ -324,9 +324,6 @@
         <div class="analysis-item" id="analysis-actual-matches">🎉 <strong>對決統計：</strong>計算中...</div>
         <div class="analysis-item" id="analysis-1">🎮 <strong>本命作品：</strong>計算中...</div>
         <div class="analysis-item" id="analysis-2">💗 <strong>TOP 3 組成：</strong>計算中...</div>
-        <div class="analysis-item" id="analysis-stable">💘 <strong>最穩定偏愛：</strong>計算中...</div>
-        <div class="analysis-item" id="analysis-most-wins">⚔️ <strong>最強實戰王：</strong>計算中...</div>
-        <div class="analysis-item" id="analysis-winrate">🔥 <strong>戰無不勝勝率王：</strong>計算中...</div>
         <div class="analysis-item" id="analysis-avg-rank">📈 <strong>各作品男主平均排名：</strong>計算中...</div>
       </div>
 
@@ -576,55 +573,8 @@
         .join(' ＋ ');
       renderAnalysis('analysis-2', '💗 TOP 3 組成：', top3Summary || '無');
 
-      // 3. 💘 最穩定偏愛
-      let stableChar = ranking[0];
-      let maxScore = -1;
-      ranking.slice(0, 5).forEach((name, rankIdx) => {
-        const stat = pickStats[name];
-        if (stat && stat.battles > 0) {
-          const score = (stat.wins / stat.battles) * 10 + stat.battles - rankIdx;
-          if (score > maxScore) {
-            maxScore = score;
-            stableChar = name;
-          }
-        }
-      });
-      const stableStat = pickStats[stableChar];
-      const stableWinRate = (stableStat && stableStat.battles > 0)
-        ? ((stableStat.wins / stableStat.battles) * 100).toFixed(0)
-        : "100";
-      renderAnalysis('analysis-stable', '💘 最穩定偏愛：', 
-        `${stableChar}（參戰 ${stableStat ? stableStat.battles : 0} 次，勝率 ${stableWinRate}%，排名 #${ranking.indexOf(stableChar) + 1}）`);
 
-      // 4. ⚔️ 最強實戰王
-      let mostWinsChar = ranking[0];
-      let maxWins = -1;
-      for (const [name, stat] of Object.entries(pickStats)) {
-        if (stat.wins > maxWins) {
-          maxWins = stat.wins;
-          mostWinsChar = name;
-        }
-      }
-      renderAnalysis('analysis-most-wins', '⚔️ 最強實戰王：', `${mostWinsChar}（斬獲 ${maxWins} 勝）`);
-
-      // 5. 🔥 戰無不勝勝率王
-      let winRateKing = null;
-      let maxWinRate = -1;
-      for (const [name, stat] of Object.entries(pickStats)) {
-        if (stat.battles >= 5) {
-          const rate = stat.wins / stat.battles;
-          if (rate > maxWinRate) {
-            maxWinRate = rate;
-            winRateKing = name;
-          }
-        }
-      }
-      const winRateText = winRateKing 
-        ? `${winRateKing}（勝率 ${(maxWinRate * 100).toFixed(0)}%，${pickStats[winRateKing].wins}/${pickStats[winRateKing].battles} 勝）`
-        : `${ranking[0]}（本命霸主）`;
-      renderAnalysis('analysis-winrate', '🔥 戰無不勝勝率王：', winRateText);
-
-      // 6. 📈 各作品男主平均排名
+      // 3. 📈 各作品男主平均排名
       let bestAvgGame = "";
       let minAvgRank = 999;
       for (const game of Object.keys(gameTotalChars)) {
