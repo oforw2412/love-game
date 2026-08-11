@@ -61,22 +61,6 @@
       font-weight: 600;
     }
 
-    .progress-bar-container {
-      width: 100%;
-      background-color: #ffe4e6;
-      border-radius: 999px;
-      height: 10px;
-      overflow: hidden;
-      margin-bottom: 16px;
-    }
-
-    .progress-bar {
-      height: 100%;
-      background-color: var(--primary);
-      width: 0%;
-      transition: width 0.3s ease;
-    }
-
     .match-tag {
       display: inline-block;
       padding: 4px 12px;
@@ -301,10 +285,6 @@
         <span id="progress-text">已完成 0 場</span>
       </div>
 
-      <div class="progress-bar-container">
-        <div class="progress-bar" id="progress"></div>
-      </div>
-
       <div id="match-tag" class="match-tag">第 1 場對決</div>
 
       <div class="question">如果只能留一個，你選誰？</div>
@@ -477,9 +457,6 @@
 
       document.getElementById('match-tag').textContent = `第 ${totalMatchesDone + 1} 場對決`;
       document.getElementById('progress-text').textContent = `已完成 ${totalMatchesDone} 場`;
-      
-      const progress = Math.min(95, totalMatchesDone * 3);
-      document.getElementById('progress').style.width = `${progress}%`;
 
       isProcessingClick = false; // 允許進行下一次點擊
     }
@@ -517,7 +494,6 @@
     }
 
     function finishGame(finalRanking) {
-      document.getElementById('progress').style.width = `100%`;
       document.getElementById('game-box').style.display = 'none';
       document.getElementById('result-box').style.display = 'block';
 
